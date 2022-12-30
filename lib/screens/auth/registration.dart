@@ -67,85 +67,89 @@ class _RegistrationPageState extends State<RegistrationPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: ListView(
-          // crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: 200,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Hero(
-                    tag: "login_logo",
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                      ),
-                      padding: EdgeInsets.only(top: 50),
-                      height: 200,
-                      width: MediaQuery.of(context).size.width,
-                      child: Image.asset(
-                        "assets/clipboard.png",
-                        fit: BoxFit.fitHeight,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ListView(
+            // crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 200,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Hero(
+                      tag: "login_logo",
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                        ),
+                        padding: EdgeInsets.only(top: 50),
+                        height: 200,
+                        width: MediaQuery.of(context).size.width,
+                        child: Image.asset(
+                          "assets/clipboard.png",
+                          fit: BoxFit.fitHeight,
+                        ),
                       ),
                     ),
+                  ],
+                ),
+              ),
+              Column(
+                children: [
+                  SizedBox(
+                    height: 50,
+                  ),
+                  Text(
+                    "Registration",
+                    style: GoogleFonts.montserrat(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 20,
+                      color: btBlack,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: "Register to create your account",
+                            style: GoogleFonts.montserrat(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                              color: textGrey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 50,
+                  ),
+                  textField(title: "Name"),
+                  textField(
+                      title: "Mobile", keyboardType: TextInputType.number),
+                  textField(title: "Password", isPassword: true),
+                  textField(title: "Confirm Password", isPassword: true),
+                  SizedBox(
+                    height: 50,
+                  ),
+                  PrimaryButton(
+                    title: "REGISTER",
+                    onpressed: () {
+                      context.push(HomeScreen.routeName);
+                    },
                   ),
                 ],
               ),
-            ),
-            Column(
-              children: [
-                SizedBox(
-                  height: 50,
-                ),
-                Text(
-                  "Registration",
-                  style: GoogleFonts.montserrat(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 20,
-                    color: btBlack,
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: "Register to create your account",
-                          style: GoogleFonts.montserrat(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
-                            color: textGrey,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 50,
-                ),
-                textField(title: "Name"),
-                textField(title: "Mobile", keyboardType: TextInputType.number),
-                textField(title: "Password", isPassword: true),
-                textField(title: "Confirm Password", isPassword: true),
-                SizedBox(
-                  height: 50,
-                ),
-                PrimaryButton(
-                  title: "REGISTER",
-                  onpressed: () {
-                    context.push(HomeScreen.routeName);
-                  },
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

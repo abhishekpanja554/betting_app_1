@@ -1,5 +1,4 @@
 import 'package:betting_app_1/app/routes.dart';
-import 'package:betting_app_1/screens/auth/login.dart';
 import 'package:flutter/material.dart';
 
 void main() {

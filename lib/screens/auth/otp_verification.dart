@@ -60,147 +60,150 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: ListView(
-          // crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: 400,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Hero(
-                    tag: "login_logo",
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ListView(
+            // crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.4,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Hero(
+                      tag: "login_logo",
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                        ),
+                        padding: EdgeInsets.only(top: 50),
+                        height: 250,
+                        width: MediaQuery.of(context).size.width,
+                        child: Image.asset(
+                          "assets/pin.png",
+                          fit: BoxFit.fitHeight,
+                        ),
                       ),
-                      padding: EdgeInsets.only(top: 50),
-                      height: 250,
-                      width: MediaQuery.of(context).size.width,
-                      child: Image.asset(
-                        "assets/pin.png",
-                        fit: BoxFit.fitHeight,
+                    ),
+                  ],
+                ),
+              ),
+              Column(
+                children: [
+                  SizedBox(
+                    height: 50,
+                  ),
+                  Text(
+                    "Login using OTP",
+                    style: GoogleFonts.montserrat(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 20,
+                      color: btBlack,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: "Enter the OTP sent to ",
+                            style: GoogleFonts.montserrat(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                              color: textGrey,
+                            ),
+                          ),
+                          TextSpan(
+                            text: "+91-9836335391",
+                            style: GoogleFonts.montserrat(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              color: btBlack,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                ],
-              ),
-            ),
-            Column(
-              children: [
-                SizedBox(
-                  height: 50,
-                ),
-                Text(
-                  "Login using OTP",
-                  style: GoogleFonts.montserrat(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 20,
-                    color: btBlack,
+                  SizedBox(
+                    height: 50,
                   ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
+                  SizedBox(
+                    width: 200,
+                    child: Pinput(
+                      length: 6,
+                      defaultPinTheme: defaultPinTheme,
+                      focusedPinTheme: focusedPinTheme,
+                      submittedPinTheme: submittedPinTheme,
+                      validator: (s) {
+                        return s!.length == 6 ? null : 'Pin is incorrect';
+                      },
+                      pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
+                      showCursor: true,
+                      onCompleted: (pin) => print(pin),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        TextSpan(
-                          text: "Enter the OTP sent to ",
-                          style: GoogleFonts.montserrat(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
-                            color: textGrey,
+                        RichText(
+                          textAlign: TextAlign.center,
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: "Didn't recieve the OTP? ",
+                                style: GoogleFonts.montserrat(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14,
+                                  color: textGrey,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        TextSpan(
-                          text: "+91-9836335391",
-                          style: GoogleFonts.montserrat(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                            color: btBlack,
+                        TextButton(
+                          style: ButtonStyle(
+                            overlayColor: MaterialStateProperty.all(
+                              Colors.orangeAccent.withOpacity(0.3),
+                            ),
                           ),
+                          child: Text(
+                            "RESEND OTP",
+                            style: GoogleFonts.montserrat(
+                              letterSpacing: 1.25,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              color: orange,
+                            ),
+                          ),
+                          onPressed: () {},
                         ),
                       ],
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: 50,
-                ),
-                SizedBox(
-                  width: 200,
-                  child: Pinput(
-                    length: 6,
-                    defaultPinTheme: defaultPinTheme,
-                    focusedPinTheme: focusedPinTheme,
-                    submittedPinTheme: submittedPinTheme,
-                    validator: (s) {
-                      return s!.length == 6 ? null : 'Pin is incorrect';
+                  SizedBox(
+                    height: 30,
+                  ),
+                  PrimaryButton(
+                    onpressed: () {
+                      context.push(RegistrationPage.routeName);
                     },
-                    pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
-                    showCursor: true,
-                    onCompleted: (pin) => print(pin),
+                    title: "VERIFY & PROCEED",
                   ),
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: "Didn't recieve the OTP? ",
-                              style: GoogleFonts.montserrat(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14,
-                                color: textGrey,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      TextButton(
-                        style: ButtonStyle(
-                          overlayColor: MaterialStateProperty.all(
-                            Colors.orangeAccent.withOpacity(0.3),
-                          ),
-                        ),
-                        child: Text(
-                          "RESEND OTP",
-                          style: GoogleFonts.montserrat(
-                            letterSpacing: 1.25,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                            color: orange,
-                          ),
-                        ),
-                        onPressed: () {},
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                PrimaryButton(
-                  onpressed: () {
-                    context.push(RegistrationPage.routeName);
-                  },
-                  title: "VERIFY & PROCEED",
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

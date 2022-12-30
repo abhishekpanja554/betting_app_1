@@ -1,4 +1,7 @@
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+
 import 'package:betting_app_1/constants/colors.dart';
+import 'package:betting_app_1/widgets/header.dart';
 import 'package:flutter/material.dart';
 
 class MyNotificationPage extends StatefulWidget {
@@ -22,8 +25,17 @@ class _MyNotificationPageState extends State<MyNotificationPage> {
           ],
         ),
       ),
-      child: Center(
-        child: Text("notification"),
+      child: Column(
+        children: [
+          CommonHeader(
+            title: "Notifications",
+          ),
+          Expanded(
+            child: Center(
+              child: Text("No Notifications"),
+            ),
+          ),
+        ],
       ),
     );
   }

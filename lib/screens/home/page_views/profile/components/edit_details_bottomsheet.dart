@@ -63,7 +63,7 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      height: MediaQuery.of(context).size.height * 0.4,
+      height: MediaQuery.of(context).size.height * 0.5,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -85,7 +85,7 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
                   style: GoogleFonts.montserrat(
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
-                    color: buttonPrimary,
+                    color: deepPurple,
                   ),
                 ),
               ],
