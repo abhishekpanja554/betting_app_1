@@ -17,7 +17,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Container(
       height: 100,
       alignment: Alignment.centerLeft,
-      width: MediaQuery.of(context).size.width - 32,
+      width: MediaQuery.of(context).size.width/3,
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
         color: backgroundColor,
@@ -28,36 +28,40 @@ class _MyHomePageState extends State<MyHomePage> {
           horizontal: 16,
           vertical: 10,
         ),
-        child: Row(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Expanded(
-              child: Text(
-                title,
-                style: GoogleFonts.montserrat(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.white,
-                ),
-              ),
-            ),
             InkWell(
               overlayColor: MaterialStateProperty.all(
                 Colors.white.withOpacity(0.5),
               ),
               onTap: () {},
               child: Container(
-                height: 65,
-                width: 65,
+                height: 34,
+                width: 34,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(16),
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(
-                  Icons.arrow_forward_ios_rounded,
+                  Icons.local_attraction,
                   color: Colors.white,
                 ),
               ),
             ),
+            Expanded(
+              child: Text(
+                title,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.montserrat(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            
           ],
         ),
       ),
@@ -96,9 +100,14 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           children: [
             CommonHeader(title: "Hi Abhishek!"),
-            lotteryBox(title: "Morning Lottery"),
-            lotteryBox(title: "Afternoon Lottery", backgroundColor: orange1),
-            lotteryBox(title: "Night Lottery", backgroundColor: deepPurple),
+            Wrap(
+              alignment: WrapAlignment.start,
+              children: [
+                lotteryBox(title: "Morning Lottery"),
+                lotteryBox(title: "Afternoon Lottery", backgroundColor: orange1),
+                lotteryBox(title: "Night Lottery", backgroundColor: deepPurple),
+              ],
+            ),
             SizedBox(
               height: 30,
             ),
