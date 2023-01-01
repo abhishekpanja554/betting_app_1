@@ -145,7 +145,6 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                       },
                       pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
                       showCursor: true,
-                      onCompleted: (pin) => print(pin),
                     ),
                   ),
                   SizedBox(
@@ -207,6 +206,6 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
         ),
       ),
     );
-    ;
+    
   }
 }

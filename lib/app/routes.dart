@@ -4,6 +4,7 @@ import 'package:betting_app_1/screens/auth/login.dart';
 import 'package:betting_app_1/screens/auth/otp_verification.dart';
 import 'package:betting_app_1/screens/auth/registration.dart';
 import 'package:betting_app_1/screens/home/screen.dart';
+import 'package:betting_app_1/screens/lottery/lottery_screen.dart';
 import 'package:go_router/go_router.dart';
 
 final router = GoRouter(
@@ -24,6 +25,10 @@ final router = GoRouter(
     GoRoute(
       path: HomeScreen.routeName,
       builder: (context, state) => HomeScreen(),
+    ),
+    GoRoute(
+      path: LotteryScreen.routeName,
+      builder: (context, state) => LotteryScreen(),
     ),
   ],
 );

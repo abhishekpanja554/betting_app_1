@@ -1,8 +1,10 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:betting_app_1/constants/colors.dart';
+import 'package:betting_app_1/screens/lottery/lottery_screen.dart';
 import 'package:betting_app_1/widgets/header.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -14,55 +16,59 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Widget lotteryBox({required String title, Color backgroundColor = orange}) {
-    return Container(
-      height: 100,
-      alignment: Alignment.centerLeft,
-      width: MediaQuery.of(context).size.width/3,
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 10,
+    return GestureDetector(
+      onTap: () {
+        context.push(LotteryScreen.routeName);
+      },
+      child: Container(
+        height: 100,
+        alignment: Alignment.centerLeft,
+        width: MediaQuery.of(context).size.width / 3,
+        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(20),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            InkWell(
-              overlayColor: MaterialStateProperty.all(
-                Colors.white.withOpacity(0.5),
-              ),
-              onTap: () {},
-              child: Container(
-                height: 34,
-                width: 34,
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(14),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 10,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              InkWell(
+                overlayColor: MaterialStateProperty.all(
+                  Colors.white.withOpacity(0.5),
                 ),
-                child: Icon(
-                  Icons.local_attraction,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            Expanded(
-              child: Text(
-                title,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.white,
+                onTap: () {},
+                child: Container(
+                  height: 34,
+                  width: 34,
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(
+                    Icons.local_attraction,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-            ),
-            
-          ],
+              Expanded(
+                child: Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.montserrat(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -72,9 +78,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return Expanded(
       child: Divider(
         height: 10,
-        color: deepPurple, //idth space of divider
-        thickness: 1, //thickness of divier line
-        indent: 16, //Spacing at the top of divider.
+        color: deepPurple,
+        thickness: 1,
+        indent: 16,
         endIndent: 16,
       ),
     );
@@ -104,7 +110,8 @@ class _MyHomePageState extends State<MyHomePage> {
               alignment: WrapAlignment.start,
               children: [
                 lotteryBox(title: "Morning Lottery"),
-                lotteryBox(title: "Afternoon Lottery", backgroundColor: orange1),
+                lotteryBox(
+                    title: "Afternoon Lottery", backgroundColor: orange1),
                 lotteryBox(title: "Night Lottery", backgroundColor: deepPurple),
               ],
             ),
@@ -126,8 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             ElevatedButton(
               style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.all(buttonPrimary),
+                backgroundColor: MaterialStateProperty.all(buttonPrimary),
                 shape: MaterialStateProperty.all(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
@@ -137,7 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Size(MediaQuery.of(context).size.width - 64, 60),
                 ),
               ),
-              onPressed: (){},
+              onPressed: () {},
               child: Text(
                 "Live Result",
                 style: GoogleFonts.montserrat(
@@ -156,7 +162,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 side: MaterialStateProperty.all(
                   BorderSide(color: deepPurple),
                 ),
-                overlayColor: MaterialStateProperty.all(Colors.deepPurpleAccent.shade100),
+                overlayColor:
+                    MaterialStateProperty.all(Colors.deepPurpleAccent.shade100),
                 shape: MaterialStateProperty.all(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
