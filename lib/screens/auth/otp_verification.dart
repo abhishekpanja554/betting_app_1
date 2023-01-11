@@ -1,22 +1,30 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:betting_app_1/app/app_data.dart';
 import 'package:betting_app_1/constants/colors.dart';
 import 'package:betting_app_1/screens/auth/registration.dart';
+import 'package:betting_app_1/screens/home/screen.dart';
 import 'package:betting_app_1/widgets/primary_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
 
 class OTPVerificationScreen extends StatefulWidget {
   static String routeName = '/otp_verification';
-  const OTPVerificationScreen({super.key});
+  final String verificationId;
+  final String phone;
+  const OTPVerificationScreen(
+      {required this.verificationId, required this.phone, super.key});
 
   @override
   State<OTPVerificationScreen> createState() => _OTPVerificationScreenState();
 }
 
 class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
+  final auth = FirebaseAuth.instance;
   final defaultPinTheme = PinTheme(
     width: 56,
     height: 56,
@@ -36,6 +44,8 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   late final PinTheme focusedPinTheme;
   late final PinTheme submittedPinTheme;
 
+  String enteredOtp = "";
+
   @override
   void initState() {
     focusedPinTheme = defaultPinTheme.copyDecorationWith(
@@ -52,6 +62,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
         color: Colors.white,
       ),
     );
+    // otpAuth();
     super.initState();
   }
 
@@ -119,7 +130,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                             ),
                           ),
                           TextSpan(
-                            text: "+91-9836335391",
+                            text: "+91-${widget.phone}",
                             style: GoogleFonts.montserrat(
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
@@ -136,6 +147,9 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                   SizedBox(
                     width: 200,
                     child: Pinput(
+                      onCompleted: (String value) {
+                        enteredOtp = value;
+                      },
                       length: 6,
                       defaultPinTheme: defaultPinTheme,
                       focusedPinTheme: focusedPinTheme,
@@ -194,8 +208,42 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                     height: 30,
                   ),
                   PrimaryButton(
-                    onpressed: () {
-                      context.push(RegistrationPage.routeName);
+                    onpressed: () async {
+                      try {
+                        EasyLoading.show(
+                            maskType: EasyLoadingMaskType.black,
+                            status: "Verifying",
+                            dismissOnTap: false);
+                        PhoneAuthCredential credential =
+                            PhoneAuthProvider.credential(
+                                verificationId: widget.verificationId,
+                                smsCode: enteredOtp);
+                        await auth
+                            .signInWithCredential(credential)
+                            .then((value) {
+                          SessionManager().userInfo = value.user;
+                          EasyLoading.dismiss();
+                          if (value.additionalUserInfo!.isNewUser) {
+                            context.go(RegistrationPage.routeName);
+                          } else {
+                            context.go(HomeScreen.routeName);
+                          }
+                        });
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.redAccent,
+                            content: Text(
+                              "Incorrect OTP",
+                              style: GoogleFonts.montserrat(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 14,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        );
+                      }
                     },
                     title: "VERIFY & PROCEED",
                   ),
@@ -206,6 +254,5 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
         ),
       ),
     );
-    
   }
 }

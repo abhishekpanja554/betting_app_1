@@ -1,11 +1,15 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+
+import 'dart:io';
 
 import 'package:betting_app_1/constants/colors.dart';
 import 'package:betting_app_1/screens/lottery/lottery_screen.dart';
+import 'package:betting_app_1/screens/results/results_screen.dart';
 import 'package:betting_app_1/widgets/header.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -22,12 +26,19 @@ class _MyHomePageState extends State<MyHomePage> {
       },
       child: Container(
         height: 100,
-        alignment: Alignment.centerLeft,
+        alignment: Alignment.center,
         width: MediaQuery.of(context).size.width / 3,
         margin: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color: backgroundColor,
           borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              blurRadius: 10,
+              color: Colors.black38,
+              offset: Offset(4, 4),
+            ),
+          ],
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -38,22 +49,16 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              InkWell(
-                overlayColor: MaterialStateProperty.all(
-                  Colors.white.withOpacity(0.5),
+              Container(
+                height: 34,
+                width: 34,
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                onTap: () {},
-                child: Container(
-                  height: 34,
-                  width: 34,
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Icon(
-                    Icons.local_attraction,
-                    color: Colors.white,
-                  ),
+                child: Icon(
+                  Icons.local_attraction,
+                  color: Colors.white,
                 ),
               ),
               Expanded(
@@ -86,6 +91,16 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  _launchURL() async {
+      Uri url =
+          Uri.parse('youtube://www.youtube.com/watch?v=IUalUbru-jo');
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url);
+      } else {
+        throw 'Could not launch $url';
+      }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -111,8 +126,10 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 lotteryBox(title: "Morning Lottery"),
                 lotteryBox(
-                    title: "Afternoon Lottery", backgroundColor: orange1),
+                    title: "Evening Lottery", backgroundColor: orange1),
                 lotteryBox(title: "Night Lottery", backgroundColor: deepPurple),
+                lotteryBox(title: "Weekly Lottery"),
+                lotteryBox(title: "Monthly Lottery",backgroundColor: orange1),
               ],
             ),
             SizedBox(
@@ -143,7 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Size(MediaQuery.of(context).size.width - 64, 60),
                 ),
               ),
-              onPressed: () {},
+              onPressed: _launchURL,
               child: Text(
                 "Live Result",
                 style: GoogleFonts.montserrat(
@@ -173,7 +190,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Size(MediaQuery.of(context).size.width - 64, 60),
                 ),
               ),
-              onPressed: () {},
+              onPressed: () => context.push(ResultScreen.routeName),
               child: Text(
                 "Show Results",
                 style: GoogleFonts.montserrat(

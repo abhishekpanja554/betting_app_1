@@ -3,9 +3,11 @@
 import 'package:betting_app_1/constants/colors.dart';
 import 'package:betting_app_1/screens/auth/otp_verification.dart';
 import 'package:betting_app_1/widgets/primary_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class LoginPage extends StatefulWidget {
   static String routeName = '/login';
@@ -16,6 +18,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  TextEditingController phoneController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -116,6 +119,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: TextField(
                     maxLength: 10,
                     // textAlign: TextAlign.center,
+                    controller: phoneController,
                     keyboardType: TextInputType.number,
                     cursorColor: textGrey,
                     style: GoogleFonts.montserrat(
@@ -143,8 +147,27 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 PrimaryButton(
-                  onpressed: () {
-                    context.push(OTPVerificationScreen.routeName);
+                  onpressed: () async {
+                    if (phoneController.text.length == 10) {
+                      EasyLoading.show(
+                          status: "Sending OTP",
+                          dismissOnTap: false,
+                          maskType: EasyLoadingMaskType.black);
+                      await FirebaseAuth.instance.verifyPhoneNumber(
+                        phoneNumber: "+91${phoneController.text}",
+                        verificationCompleted:
+                            (PhoneAuthCredential credential) async {},
+                        verificationFailed: (FirebaseAuthException e) {},
+                        codeSent: (String verificationId, int? resendToken) {
+                          EasyLoading.dismiss();
+                          context.push(OTPVerificationScreen.routeName, extra: {
+                            "verification_id": verificationId,
+                            "phone": phoneController.text
+                          });
+                        },
+                        codeAutoRetrievalTimeout: (String verificationId) {},
+                      );
+                    }
                   },
                   title: "GET OTP",
                 ),

@@ -8,7 +8,13 @@ class CommonHeader extends StatelessWidget {
   final String title;
   final IconData? trailingIcon;
   final Function()? iconAction;
-  const CommonHeader({required this.title, this.trailingIcon, this.iconAction ,super.key});
+  final Function()? backButtonAction;
+  const CommonHeader(
+      {required this.title,
+      this.trailingIcon,
+      this.iconAction,
+      this.backButtonAction,
+      super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +24,13 @@ class CommonHeader extends StatelessWidget {
       height: 70,
       child: Row(
         children: [
+          if (backButtonAction != null) IconButton(
+            onPressed: backButtonAction ?? () {},
+            icon: Icon(
+              Icons.arrow_back_rounded,
+              color: buttonPrimary,
+            ),
+          ),
           Expanded(
             child: Text(
               title,
@@ -28,14 +41,15 @@ class CommonHeader extends StatelessWidget {
               ),
             ),
           ),
-          if(trailingIcon != null) IconButton(
-            onPressed: iconAction ?? () {},
-            icon: Icon(
-              trailingIcon,
-              color: deepPurple,
-              size: 20,
+          if (trailingIcon != null)
+            IconButton(
+              onPressed: iconAction ?? () {},
+              icon: Icon(
+                trailingIcon,
+                color: deepPurple,
+                size: 20,
+              ),
             ),
-          ),
         ],
       ),
     );

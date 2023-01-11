@@ -101,7 +101,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     height: 50,
                   ),
                   Text(
-                    "Registration",
+                    "Complete Registration",
                     style: GoogleFonts.montserrat(
                       fontWeight: FontWeight.w600,
                       fontSize: 20,

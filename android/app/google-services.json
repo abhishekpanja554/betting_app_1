@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "210363865612",
+    "project_id": "mm-lottery-ce414",
+    "storage_bucket": "mm-lottery-ce414.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:210363865612:android:b837b22037b7f81c9b2c29",
+        "android_client_info": {
+          "package_name": "com.example.betting_app_1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "210363865612-h5sd7to9qmq4ms82ubj6b6uqtt6obsch.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.betting_app_1",
+            "certificate_hash": "013f7359d3eba13c17dcf63161605c16a80303ea"
+          }
+        },
+        {
+          "client_id": "210363865612-ogrr4m9i0l99d3u4kba1fkdeu5l1fsvm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgpTHFc6JQ0oDXJ8seUBF88P9Ecx3XH1Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "210363865612-ogrr4m9i0l99d3u4kba1fkdeu5l1fsvm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
