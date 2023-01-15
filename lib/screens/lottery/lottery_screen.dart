@@ -2,6 +2,7 @@
 
 import 'package:betting_app_1/constants/colors.dart';
 import 'package:betting_app_1/widgets/header.dart';
+import 'package:betting_app_1/widgets/vertical_tabs.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -65,7 +66,7 @@ class _LotteryScreenState extends State<LotteryScreen> {
 
   List<Widget> generateTabs() {
     List<Widget> widgets = [];
-    for (var i = 0; i < 6; i++) {
+    for (var i = 0; i < getTabs().length; i++) {
       widgets.add(
         Container(
           child: Column(
@@ -75,7 +76,7 @@ class _LotteryScreenState extends State<LotteryScreen> {
                 style: GoogleFonts.montserrat(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: Color.fromARGB(255, 249, 208, 154),
+                  color: Color.fromARGB(255, 255, 145, 0),
                 ),
               ),
               SizedBox(
@@ -94,6 +95,28 @@ class _LotteryScreenState extends State<LotteryScreen> {
       );
     }
     return widgets;
+  }
+
+  List<Tab> getTabs() {
+    List<Tab> tabList = [];
+    int c = "A".codeUnitAt(0);
+    int end = "Z".codeUnitAt(0);
+    while (c <= end) {
+      tabList.add(
+        Tab(
+          child: Text(
+            String.fromCharCode(c),
+            style: GoogleFonts.montserrat(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      );
+      c++;
+    }
+    return tabList;
   }
 
   @override
@@ -120,53 +143,14 @@ class _LotteryScreenState extends State<LotteryScreen> {
                 backButtonAction: () => context.pop(),
               ),
               Expanded(
-                child: TabContainer(
-                  radius: 20,
-                  tabEdge: TabEdge.left,
-                  tabCurve: Curves.easeIn,
-                  tabExtent: 75,
-                  childPadding: EdgeInsets.all(16),
-                  transitionBuilder: (child, animation) {
-                    animation =
-                        CurvedAnimation(curve: Curves.easeIn, parent: animation);
-                    return SlideTransition(
-                      position: Tween(
-                        begin: const Offset(0.2, 0.0),
-                        end: const Offset(0.0, 0.0),
-                      ).animate(animation),
-                      child: FadeTransition(
-                        opacity: animation,
-                        child: child,
-                      ),
-                    );
-                  },
-                  selectedTextStyle: GoogleFonts.montserrat(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white,
-                  ),
-                  unselectedTextStyle: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: deepPurple,
-                  ),
-                  tabs: [
-                    '5 Sem',
-                    '10 Sem',
-                    '25 Sem',
-                    '50 Sem',
-                    '150 Sem',
-                    '200 Sem',
-                  ],
-                  colors: <Color>[
-                    Color(0xff8A7DFD),
-                    Color(0xFF6B5DFC),
-                    Color(0xff8A7DFD),
-                    Color(0xFF6B5DFC),
-                    Color(0xff8A7DFD),
-                    Color(0xFF6B5DFC),
-                  ],
-                  children: generateTabs(),
+                child: VerticalTabView(
+                  tabsWidth: 90,
+                  backgroundColor: Colors.transparent,
+                  indicatorColor: Colors.white,
+                  selectedTabBackgroundColor: buttonPrimary,
+                  tabBackgroundColor: deepPurple,
+                  tabs: getTabs(),
+                  contents: generateTabs(),
                 ),
               ),
             ],

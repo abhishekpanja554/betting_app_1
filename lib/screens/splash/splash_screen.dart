@@ -18,12 +18,14 @@ class _SplashScreenState extends State<SplashScreen> {
   void isLogin() {
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) async {
       await Future.delayed(const Duration(seconds: 2), () {
-        if (FirebaseAuth.instance.currentUser != null) {
-          SessionManager().userInfo = FirebaseAuth.instance.currentUser;
-          context.go(HomeScreen.routeName);
-        } else {
-          context.go(LoginPage.routeName);
-        }
+        FirebaseAuth.instance.authStateChanges().listen((User? user) {
+          if (user != null) {
+            SessionManager().userInfo = FirebaseAuth.instance.currentUser;
+            context.go(HomeScreen.routeName);
+          } else {
+            context.go(LoginPage.routeName);
+          }
+        });
       });
     });
   }

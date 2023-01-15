@@ -1,10 +1,18 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:developer';
+
+import 'package:betting_app_1/app/app_data.dart';
 import 'package:betting_app_1/constants/colors.dart';
+import 'package:betting_app_1/screens/auth/login.dart';
 import 'package:betting_app_1/screens/home/page_views/profile/components/edit_details_bottomsheet.dart';
 import 'package:betting_app_1/widgets/header.dart';
+import 'package:betting_app_1/widgets/primary_button.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class MyProfilePage extends StatefulWidget {
@@ -15,6 +23,16 @@ class MyProfilePage extends StatefulWidget {
 }
 
 class _MyProfilePageState extends State<MyProfilePage> {
+  final Stream<DocumentSnapshot<Map<String, dynamic>>> _usersStream =
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(SessionManager().userInfo!.uid)
+          .snapshots();
+  final Stream<DocumentSnapshot<Map<String, dynamic>>> _accountStream =
+      FirebaseFirestore.instance
+          .collection('account_details')
+          .doc(SessionManager().userInfo!.uid)
+          .snapshots();
   Widget profileDataWidget(String title, String value, IconData icon) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -69,7 +87,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
     );
   }
 
-  showEditBottomSheet(){
+  showEditBottomSheet() {
     showModalBottomSheet(
       context: context,
       isDismissible: true,
@@ -104,79 +122,144 @@ class _MyProfilePageState extends State<MyProfilePage> {
           ],
         ),
       ),
-      child: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            CommonHeader(
-              title: "My Profile",
-              trailingIcon: FeatherIcons.edit,
-              iconAction: () {
-                showEditBottomSheet();
-              },
-            ),
-            Container(
-              height: 100,
-              width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: CircleAvatar(
-                backgroundColor: buttonPrimary,
-                radius: 50,
-                child: Icon(
-                  FeatherIcons.user,
-                  size: 30,
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
+      child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+          stream: _usersStream,
+          builder: (BuildContext context,
+              AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Text("Loading");
+            }
+            Map<String, dynamic> info = snapshot.data!.data() ?? {};
+            return SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                    "Personal Details",
-                    style: GoogleFonts.montserrat(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: buttonPrimary,
+                  CommonHeader(
+                    title: "My Profile",
+                    // trailingIcon: FeatherIcons.edit,
+                    // iconAction: () {
+                    //   showEditBottomSheet();
+                    // },
+                  ),
+                  Container(
+                    height: 100,
+                    width: MediaQuery.of(context).size.width,
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: CircleAvatar(
+                      backgroundColor: buttonPrimary,
+                      radius: 50,
+                      child: Icon(
+                        FeatherIcons.user,
+                        size: 30,
+                      ),
                     ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Personal Details",
+                          style: GoogleFonts.montserrat(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            color: buttonPrimary,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            showEditBottomSheet();
+                          },
+                          icon: Icon(
+                            FeatherIcons.edit2,
+                            size: 20,
+                            color: deepPurple,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  profileDataWidget(
+                      "NAME", info["full_name"] ?? "User", FeatherIcons.user),
+                  profileDataWidget(
+                      "MOBILE", info["phone"] ?? " - ", FeatherIcons.phone),
+                  profileDataWidget(
+                      "EMAIL",
+                      SessionManager().userInfo!.email ?? " - ",
+                      FeatherIcons.mail),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Divider(),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  StreamBuilder(
+                    stream: _accountStream,
+                    builder: (BuildContext context,
+                        AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>>
+                            snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Text("Loading");
+                      }
+                      Map<String, dynamic> info = snapshot.data!.data() ?? {};
+                      return Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Row(
+                              children: [
+                                Text(
+                                  "KYC Details",
+                                  style: GoogleFonts.montserrat(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                    color: buttonPrimary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          profileDataWidget("PAN", info["pan"] ?? " - ",
+                              FeatherIcons.creditCard),
+                          profileDataWidget(
+                            "ACCOUNT NUMBER",
+                            info["account_number"] ?? " - ",
+                            Icons.currency_rupee_rounded,
+                          ),
+                          profileDataWidget(
+                            "IFSC Code",
+                            info["ifsc_code"] ?? " - ",
+                            FeatherIcons.fileText,
+                          ),
+                          SizedBox(
+                            height: 15,
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                  PrimaryButton(
+                    title: "Logout",
+                    buttonColor: Colors.redAccent,
+                    onpressed: () async {
+                      await FirebaseAuth.instance.signOut().then((value) {
+                        context.go(LoginPage.routeName);
+                      });
+                    },
+                  ),
+                  SizedBox(
+                    height: 15,
                   ),
                 ],
               ),
-            ),
-            profileDataWidget("NAME", "Abhishek Panja", FeatherIcons.user),
-            profileDataWidget("MOBILE", "9836335391", FeatherIcons.phone),
-            SizedBox(
-              height: 5,
-            ),
-            Divider(),
-            SizedBox(
-              height: 15,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  Text(
-                    "KYC Details",
-                    style: GoogleFonts.montserrat(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: buttonPrimary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            profileDataWidget("EMAIL", "abhishek.panja554@gmail.com", FeatherIcons.mail),
-            profileDataWidget("PAN", "CWGPP8376O", FeatherIcons.creditCard),
-            profileDataWidget("ACCOUNT NUMBER", "9988776655344", Icons.currency_rupee_rounded),
-          ],
-        ),
-      ),
+            );
+          }),
     );
   }
 }
