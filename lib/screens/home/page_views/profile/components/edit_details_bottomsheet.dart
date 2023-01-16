@@ -4,25 +4,28 @@ import 'package:betting_app_1/app/app_data.dart';
 import 'package:betting_app_1/constants/colors.dart';
 import 'package:betting_app_1/screens/home/page_views/profile/controller.dart';
 import 'package:betting_app_1/widgets/primary_button.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:betting_app_1/widgets/textfield_form.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class EditProfileBottomSheet extends StatefulWidget {
-  const EditProfileBottomSheet({super.key});
+  final bool isPersonal;
+  const EditProfileBottomSheet({this.isPersonal = true, super.key});
 
   @override
   State<EditProfileBottomSheet> createState() => _EditProfileBottomSheetState();
 }
 
 class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  Map<String, String> dataMap = {};
+
+  String submitBtnTitle = "SAVE CHANGES";
 
   List<Widget> editPersonalDetails() {
     return [
@@ -45,59 +48,86 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
       SizedBox(
         height: 10,
       ),
-      textField(
+      UnderlineTextfield(
         title: "Name",
-        controller: nameController,
         keyboardType: TextInputType.name,
         validator: (value) {
-          if (value == null || value.length < 3) {
+          if (value!.isNotEmpty && value.length < 3) {
             return 'Name should be greater than 3 characters';
           }
           return null;
         },
+        onSaved: (value) {
+          if (value!.isNotEmpty) dataMap["full_name"] = value;
+        },
       ),
-      textField(
+      UnderlineTextfield(
         title: "Email",
         keyboardType: TextInputType.emailAddress,
-        controller: emailController,
         validator: (value) {
-          if (value == null || !EmailValidator.validate(value)) {
+          if (value!.isNotEmpty && !EmailValidator.validate(value)) {
             return 'Enter a valid email';
           }
           return null;
         },
+        onSaved: (value) {
+          if (value!.isNotEmpty) dataMap["email"] = value;
+        },
       ),
-      textField(
+      UnderlineTextfield(
         title: "Mobile",
-        controller: phoneController,
         keyboardType: TextInputType.phone,
         validator: (value) {
-          if (value == null || value.length < 3) {
-            return 'Name should be greater than 3 characters';
+          if (value!.isNotEmpty && value.length < 10) {
+            return 'Mobile number should be of 10 characters';
           }
           return null;
+        },
+        onSaved: (value) {
+          if (value!.isNotEmpty) dataMap["phone"] = value;
         },
       ),
       SizedBox(
         height: 30,
       ),
       PrimaryButton(
-        title: "SAVE CHANGES",
+        title: submitBtnTitle,
         onpressed: () async {
-          EasyLoading.show(
-            status: "Updating",
-            dismissOnTap: false,
-          );
-          FirebaseAuth auth = FirebaseAuth.instance;
-          await auth.currentUser!.updateEmail(emailController.text);
-          await auth.currentUser!.updateDisplayName(nameController.text);
-          SessionManager().userInfo = auth.currentUser;
-          updateData({
-            if (nameController.text.isNotEmpty)
-              'full_name': nameController.text,
-            if (emailController.text.isNotEmpty) 'email': emailController.text,
-            if (phoneController.text.isNotEmpty) 'phone': phoneController.text,
-          }, context);
+          if (_formKey.currentState!.validate()) {
+            _formKey.currentState!.save();
+            setState(() {
+              submitBtnTitle = "UPDATING...";
+            });
+
+            FirebaseAuth auth = FirebaseAuth.instance;
+            if (dataMap["email"] != null)
+              await auth.currentUser!.updateEmail(dataMap["email"]);
+            if (dataMap["full_name"] != null)
+              await auth.currentUser!.updateDisplayName(dataMap["full_name"]);
+            if (dataMap["phone"] != null) {
+              auth.verifyPhoneNumber(
+                  phoneNumber: "+91" + dataMap["phone"]!,
+                  timeout: const Duration(minutes: 2),
+                  verificationCompleted: (credential) async {
+                    await auth.currentUser!.updatePhoneNumber(credential);
+                    // either this occurs or the user needs to manually enter the SMS code
+                  },
+                  verificationFailed: null,
+                  codeSent: (verificationId, [forceResendingToken]) async {
+                    String smsCode;
+                    // get the SMS code from the user somehow (probably using a text field)
+                    final PhoneAuthCredential credential =
+                        PhoneAuthProvider.credential(
+                            verificationId: verificationId, smsCode: smsCode);
+                    await auth.currentUser!.updatePhoneNumber(credential);
+                  },
+                  codeAutoRetrievalTimeout: null);
+            }
+            // await auth.currentUser!.updatePhoneNumber(dataMap["phone"]);
+            SessionManager().userInfo = auth.currentUser;
+            bool res = await updateData(dataMap, context);
+            context.pop();
+          }
         },
       ),
     ];
@@ -124,149 +154,97 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
       SizedBox(
         height: 10,
       ),
-      textField(
+      UnderlineTextfield(
         title: "PAN",
-        controller: nameController,
-        keyboardType: TextInputType.name,
         validator: (value) {
-          if (value == null || value.length < 3) {
+          if (value!.isNotEmpty && value.length < 3) {
             return 'Name should be greater than 3 characters';
           }
           return null;
         },
+        onSaved: (value) {
+          if (value!.isNotEmpty) {
+            dataMap["pan"] = value;
+          }
+        },
       ),
-      textField(
+      UnderlineTextfield(
         title: "Account Number",
         keyboardType: TextInputType.number,
-        controller: emailController,
         validator: (value) {
-          if (value == null || value.length < 9) {
+          if (value!.isNotEmpty && value.length < 9) {
             return 'Enter a valid account number';
           }
           return null;
         },
+        onSaved: (value) {
+          if (value!.isNotEmpty) {
+            dataMap["account_number"] = value;
+          }
+        },
       ),
-      textField(
+      UnderlineTextfield(
         title: "IFSC Code",
-        controller: phoneController,
-        keyboardType: TextInputType.phone,
         validator: (value) {
-          if (value == null || value.length < 3) {
+          if (value!.isNotEmpty && value.length < 10) {
             return 'Name should be greater than 3 characters';
           }
           return null;
+        },
+        onSaved: (value) {
+          if (value!.isNotEmpty) {
+            dataMap["ifsc_code"] = value;
+          }
         },
       ),
       SizedBox(
         height: 30,
       ),
       PrimaryButton(
-        title: "SAVE CHANGES",
+        title: submitBtnTitle,
         onpressed: () async {
-          EasyLoading.show(
-            status: "Updating",
-            dismissOnTap: false,
-          );
-          FirebaseAuth auth = FirebaseAuth.instance;
-          await auth.currentUser!.updateEmail(emailController.text);
-          await auth.currentUser!.updateDisplayName(nameController.text);
-          SessionManager().userInfo = auth.currentUser;
-          updateData({
-            if (nameController.text.isNotEmpty)
-              'full_name': nameController.text,
-            if (emailController.text.isNotEmpty) 'email': emailController.text,
-            if (phoneController.text.isNotEmpty) 'phone': phoneController.text,
-          }, context);
+          if (_formKey.currentState!.validate() &&
+              submitBtnTitle == "SAVE CHANGES") {
+            _formKey.currentState!.save();
+            setState(() {
+              submitBtnTitle = "UPDATING...";
+            });
+            await updateAccountData(dataMap, context);
+            context.pop();
+          }
         },
       ),
     ];
   }
 
-  Widget textField({
-    required String title,
-    TextEditingController? controller,
-    TextInputType? keyboardType,
-    bool isPassword = false,
-    String? Function(String?)? validator,
-  }) {
-    return SizedBox(
-      height: 70,
-      width: 300,
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboardType,
-        cursorColor: textGrey,
-        style: GoogleFonts.montserrat(
-          fontWeight: FontWeight.w600,
-          fontSize: 18,
-          color: btBlack,
-        ),
-        obscureText: isPassword,
-        decoration: InputDecoration(
-          labelText: title,
-          labelStyle: GoogleFonts.montserrat(
-            fontWeight: FontWeight.w400,
-            fontSize: 14,
-          ),
-          floatingLabelStyle: TextStyle(
-            color: buttonPrimary,
-          ),
-          contentPadding: EdgeInsets.zero,
-          enabledBorder: UnderlineInputBorder(
-            borderSide: BorderSide(
-              color: textGrey,
-              width: 1,
-            ),
-          ),
-          focusedBorder: UnderlineInputBorder(
-            borderSide: BorderSide(
-              color: buttonPrimary,
-              width: 2,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> updateUserDetails() async {
-    FirebaseAuth auth = FirebaseAuth.instance;
-    await auth.currentUser!.updateEmail(emailController.text);
-    await auth.currentUser!.updateDisplayName(nameController.text);
-    SessionManager().userInfo = auth.currentUser;
-    CollectionReference users = FirebaseFirestore.instance.collection('users');
-    await users.doc(SessionManager().userInfo!.uid).set({
-      'full_name': nameController.text,
-      'email': emailController.text,
-      'phone': "",
-    }).catchError((error) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          error.toString(),
-        ),
-      ));
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      height: MediaQuery.of(context).size.height * 0.5,
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              height: 5,
-              width: 50,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.blueGrey.withOpacity(0.5),
+    return Padding(
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        height: MediaQuery.of(context).size.height * 0.5,
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                height: 5,
+                width: 50,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.blueGrey.withOpacity(0.5),
+                ),
               ),
-            ),
-          ],
+              Column(
+                children: widget.isPersonal
+                    ? editPersonalDetails()
+                    : editKYCDetails(),
+              ),
+            ],
+          ),
         ),
       ),
     );

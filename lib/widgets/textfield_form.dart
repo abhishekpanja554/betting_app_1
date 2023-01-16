@@ -8,46 +8,53 @@ class UnderlineTextfield extends StatelessWidget {
   final TextInputType? keyboardType;
   final bool isPassword;
   final String? Function(String?)? validator;
+  final Function(String?)? onSaved;
   const UnderlineTextfield(
       {required this.title,
       this.controller,
       this.keyboardType,
       this.isPassword = false,
       this.validator,
+      this.onSaved,
       super.key});
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
-      cursorColor: textGrey,
-      style: GoogleFonts.montserrat(
-        fontWeight: FontWeight.w600,
-        fontSize: 18,
-        color: btBlack,
-      ),
-      obscureText: isPassword,
-      decoration: InputDecoration(
-        labelText: title,
-        labelStyle: GoogleFonts.montserrat(
-          fontWeight: FontWeight.w400,
-          fontSize: 14,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: TextFormField(
+        validator: validator,
+        onSaved: onSaved,
+        controller: controller,
+        keyboardType: keyboardType,
+        cursorColor: textGrey,
+        style: GoogleFonts.montserrat(
+          fontWeight: FontWeight.w600,
+          fontSize: 18,
+          color: btBlack,
         ),
-        floatingLabelStyle: const TextStyle(
-          color: buttonPrimary,
-        ),
-        contentPadding: EdgeInsets.zero,
-        enabledBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(
-            color: textGrey,
-            width: 1,
+        obscureText: isPassword,
+        decoration: InputDecoration(
+          labelText: title,
+          labelStyle: GoogleFonts.montserrat(
+            fontWeight: FontWeight.w400,
+            fontSize: 14,
           ),
-        ),
-        focusedBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(
+          floatingLabelStyle: const TextStyle(
             color: buttonPrimary,
-            width: 2,
+          ),
+          contentPadding: EdgeInsets.zero,
+          enabledBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: textGrey,
+              width: 1,
+            ),
+          ),
+          focusedBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: buttonPrimary,
+              width: 2,
+            ),
           ),
         ),
       ),

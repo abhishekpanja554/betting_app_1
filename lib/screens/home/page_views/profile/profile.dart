@@ -87,7 +87,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
     );
   }
 
-  showEditBottomSheet() {
+  showEditBottomSheet({bool isPersonal = true}) {
     showModalBottomSheet(
       context: context,
       isDismissible: true,
@@ -100,7 +100,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
       builder: (context) {
         return Wrap(
           children: [
-            EditProfileBottomSheet(),
+            EditProfileBottomSheet(isPersonal: isPersonal),
           ],
         );
       },
@@ -213,6 +213,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
                                   "KYC Details",
@@ -220,6 +221,16 @@ class _MyProfilePageState extends State<MyProfilePage> {
                                     fontSize: 18,
                                     fontWeight: FontWeight.w500,
                                     color: buttonPrimary,
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    showEditBottomSheet(isPersonal: false);
+                                  },
+                                  icon: Icon(
+                                    FeatherIcons.edit2,
+                                    size: 20,
+                                    color: deepPurple,
                                   ),
                                 ),
                               ],

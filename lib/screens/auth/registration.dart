@@ -3,6 +3,7 @@ import 'package:betting_app_1/app/app_data.dart';
 import 'package:betting_app_1/constants/colors.dart';
 import 'package:betting_app_1/screens/home/screen.dart';
 import 'package:betting_app_1/widgets/primary_button.dart';
+import 'package:betting_app_1/widgets/textfield_form.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,53 +24,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  Widget textField({
-    required String title,
-    TextEditingController? controller,
-    TextInputType? keyboardType,
-    bool isPassword = false,
-    String? Function(String?)? validator,
-  }) {
-    return SizedBox(
-      height: 70,
-      width: 300,
-      child: TextFormField(
-        validator: validator,
-        controller: controller,
-        keyboardType: keyboardType,
-        cursorColor: textGrey,
-        style: GoogleFonts.montserrat(
-          fontWeight: FontWeight.w600,
-          fontSize: 18,
-          color: btBlack,
-        ),
-        obscureText: isPassword,
-        decoration: InputDecoration(
-          labelText: title,
-          labelStyle: GoogleFonts.montserrat(
-            fontWeight: FontWeight.w400,
-            fontSize: 14,
-          ),
-          floatingLabelStyle: TextStyle(
-            color: buttonPrimary,
-          ),
-          contentPadding: EdgeInsets.zero,
-          enabledBorder: UnderlineInputBorder(
-            borderSide: BorderSide(
-              color: textGrey,
-              width: 1,
-            ),
-          ),
-          focusedBorder: UnderlineInputBorder(
-            borderSide: BorderSide(
-              color: buttonPrimary,
-              width: 2,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   Future<void> addUser() async {
     FirebaseAuth auth = FirebaseAuth.instance;
@@ -160,7 +114,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     SizedBox(
                       height: 50,
                     ),
-                    textField(
+                    UnderlineTextfield(
                       title: "Name",
                       controller: nameController,
                       keyboardType: TextInputType.name,
@@ -171,7 +125,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         return null;
                       },
                     ),
-                    textField(
+                    UnderlineTextfield(
                       title: "Email",
                       controller: emailController,
                       keyboardType: TextInputType.emailAddress,
