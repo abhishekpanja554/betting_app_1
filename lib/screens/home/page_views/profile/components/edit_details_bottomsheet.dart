@@ -74,19 +74,6 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
           if (value!.isNotEmpty) dataMap["email"] = value;
         },
       ),
-      UnderlineTextfield(
-        title: "Mobile",
-        keyboardType: TextInputType.phone,
-        validator: (value) {
-          if (value!.isNotEmpty && value.length < 10) {
-            return 'Mobile number should be of 10 characters';
-          }
-          return null;
-        },
-        onSaved: (value) {
-          if (value!.isNotEmpty) dataMap["phone"] = value;
-        },
-      ),
       SizedBox(
         height: 30,
       ),
@@ -100,30 +87,12 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
             });
 
             FirebaseAuth auth = FirebaseAuth.instance;
-            if (dataMap["email"] != null)
-              await auth.currentUser!.updateEmail(dataMap["email"]);
-            if (dataMap["full_name"] != null)
-              await auth.currentUser!.updateDisplayName(dataMap["full_name"]);
-            if (dataMap["phone"] != null) {
-              auth.verifyPhoneNumber(
-                  phoneNumber: "+91" + dataMap["phone"]!,
-                  timeout: const Duration(minutes: 2),
-                  verificationCompleted: (credential) async {
-                    await auth.currentUser!.updatePhoneNumber(credential);
-                    // either this occurs or the user needs to manually enter the SMS code
-                  },
-                  verificationFailed: null,
-                  codeSent: (verificationId, [forceResendingToken]) async {
-                    String smsCode;
-                    // get the SMS code from the user somehow (probably using a text field)
-                    final PhoneAuthCredential credential =
-                        PhoneAuthProvider.credential(
-                            verificationId: verificationId, smsCode: smsCode);
-                    await auth.currentUser!.updatePhoneNumber(credential);
-                  },
-                  codeAutoRetrievalTimeout: null);
+            if (dataMap["email"] != null) {
+              await auth.currentUser!.updateEmail(dataMap["email"]!);
             }
-            // await auth.currentUser!.updatePhoneNumber(dataMap["phone"]);
+            if (dataMap["full_name"] != null) {
+              await auth.currentUser!.updateDisplayName(dataMap["full_name"]);
+            }
             SessionManager().userInfo = auth.currentUser;
             bool res = await updateData(dataMap, context);
             context.pop();

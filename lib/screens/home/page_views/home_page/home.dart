@@ -2,10 +2,12 @@
 
 import 'dart:io';
 
+import 'package:betting_app_1/app/app_data.dart';
 import 'package:betting_app_1/constants/colors.dart';
 import 'package:betting_app_1/screens/lottery/lottery_screen.dart';
 import 'package:betting_app_1/screens/results/results_screen.dart';
 import 'package:betting_app_1/widgets/header.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -19,10 +21,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Widget lotteryBox({required String title, Color backgroundColor = orange}) {
+  final Stream<QuerySnapshot<Map<String, dynamic>>> _ticketTypeStream =
+      FirebaseFirestore.instance.collection('ticket_type').snapshots();
+
+  Widget lotteryBox({required Map<String, dynamic> typeObj,  Color backgroundColor = orange}) {
     return GestureDetector(
       onTap: () {
-        context.push(LotteryScreen.routeName);
+        context.push(LotteryScreen.routeName, extra: typeObj);
       },
       child: Container(
         height: 100,
@@ -63,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               Expanded(
                 child: Text(
-                  title,
+                  typeObj["type_name"],
                   textAlign: TextAlign.center,
                   style: GoogleFonts.montserrat(
                     fontSize: 14,
@@ -92,13 +97,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   _launchURL() async {
-      Uri url =
-          Uri.parse('youtube://www.youtube.com/watch?v=IUalUbru-jo');
-      if (await canLaunchUrl(url)) {
-        await launchUrl(url);
-      } else {
-        throw 'Could not launch $url';
-      }
+    Uri url = Uri.parse('youtube://www.youtube.com/watch?v=IUalUbru-jo');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   @override
@@ -120,18 +124,40 @@ class _MyHomePageState extends State<MyHomePage> {
         physics: BouncingScrollPhysics(),
         child: Column(
           children: [
-            CommonHeader(title: "Hi Abhishek!"),
-            Wrap(
-              alignment: WrapAlignment.start,
-              children: [
-                lotteryBox(title: "Morning Lottery"),
-                lotteryBox(
-                    title: "Evening Lottery", backgroundColor: orange1),
-                lotteryBox(title: "Night Lottery", backgroundColor: deepPurple),
-                lotteryBox(title: "Weekly Lottery"),
-                lotteryBox(title: "Monthly Lottery",backgroundColor: orange1),
-              ],
-            ),
+            CommonHeader(
+                title: "Hi ${SessionManager().userInfo!.displayName}!"),
+            StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                stream: _ticketTypeStream,
+                builder: (context,
+                    AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
+                        snapshot) {
+                  if (snapshot.connectionState == ConnectionState.active) {
+                    List<QueryDocumentSnapshot<Map<String, dynamic>>> ticketTypesDocs = snapshot.data!.docs;
+                    return Wrap(
+                      alignment: WrapAlignment.start,
+                      children: ticketTypesDocs.map((e){
+                        return lotteryBox(typeObj: e.data());
+                      }).toList(),
+                      // [
+                      //   lotteryBox(title: "Morning Lottery"),
+                      //   lotteryBox(
+                      //       title: "Evening Lottery", backgroundColor: orange1),
+                      //   lotteryBox(
+                      //       title: "Night Lottery",
+                      //       backgroundColor: deepPurple),
+                      //   lotteryBox(title: "Weekly Lottery"),
+                      //   lotteryBox(
+                      //       title: "Monthly Lottery", backgroundColor: orange1),
+                      // ],
+                    );
+                  } else {
+                    return Center(
+                      child: CircularProgressIndicator(
+                        color: deepPurple,
+                      ),
+                    );
+                  }
+                }),
             SizedBox(
               height: 30,
             ),

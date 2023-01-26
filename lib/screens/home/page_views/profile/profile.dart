@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:betting_app_1/app/app_data.dart';
 import 'package:betting_app_1/constants/colors.dart';
 import 'package:betting_app_1/screens/auth/login.dart';
+import 'package:betting_app_1/screens/home/page_views/profile/components/change_phone_widget.dart';
 import 'package:betting_app_1/screens/home/page_views/profile/components/edit_details_bottomsheet.dart';
 import 'package:betting_app_1/widgets/header.dart';
 import 'package:betting_app_1/widgets/primary_button.dart';
@@ -33,7 +34,8 @@ class _MyProfilePageState extends State<MyProfilePage> {
           .collection('account_details')
           .doc(SessionManager().userInfo!.uid)
           .snapshots();
-  Widget profileDataWidget(String title, String value, IconData icon) {
+  Widget profileDataWidget(String title, String value, IconData icon,
+      {String? actionTitle, void Function()? action}) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       height: 70,
@@ -44,44 +46,73 @@ class _MyProfilePageState extends State<MyProfilePage> {
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          SizedBox(
-            height: 50,
-            width: 50,
-            child: Icon(
-              icon,
-              color: Colors.blueGrey,
-              size: 24,
-            ),
-          ),
-          SizedBox(
-            width: 20,
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
             children: [
-              Text(
-                title,
-                style: GoogleFonts.montserrat(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: Color.fromARGB(255, 114, 114, 114),
+              SizedBox(
+                height: 50,
+                width: 50,
+                child: Icon(
+                  icon,
+                  color: Colors.blueGrey,
+                  size: 24,
                 ),
               ),
               SizedBox(
-                height: 5,
+                width: 20,
               ),
-              Text(
-                value,
-                style: GoogleFonts.montserrat(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: deepPurple,
-                ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.montserrat(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: Color.fromARGB(255, 114, 114, 114),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Text(
+                    value,
+                    style: GoogleFonts.montserrat(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: deepPurple,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
+          if (action != null && actionTitle != null)
+            TextButton(
+              style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all(orange.withOpacity(0.6)),
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                // fixedSize: MaterialStateProperty.all(
+                //   Size(MediaQuery.of(context).size.width - 64, 60),
+                // ),
+              ),
+              onPressed: action,
+              child: Text(
+                actionTitle,
+                style: GoogleFonts.montserrat(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
+              ),
+            )
         ],
       ),
     );
@@ -137,10 +168,6 @@ class _MyProfilePageState extends State<MyProfilePage> {
                 children: [
                   CommonHeader(
                     title: "My Profile",
-                    // trailingIcon: FeatherIcons.edit,
-                    // iconAction: () {
-                    //   showEditBottomSheet();
-                    // },
                   ),
                   Container(
                     height: 100,
@@ -187,7 +214,21 @@ class _MyProfilePageState extends State<MyProfilePage> {
                   profileDataWidget(
                       "NAME", info["full_name"] ?? "User", FeatherIcons.user),
                   profileDataWidget(
-                      "MOBILE", info["phone"] ?? " - ", FeatherIcons.phone),
+                    "MOBILE",
+                    info["phone"] ?? " - ",
+                    FeatherIcons.phone,
+                    action: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Dialog(
+                            child: ChangePhoneWidget(),
+                          );
+                        },
+                      );
+                    },
+                    actionTitle: "Change",
+                  ),
                   profileDataWidget(
                       "EMAIL",
                       SessionManager().userInfo!.email ?? " - ",

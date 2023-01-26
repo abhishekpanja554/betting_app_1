@@ -17,21 +17,6 @@ final router = GoRouter(
       builder: (context, state) {
         return LoginPage();
       },
-      // redirect: (context, state) {
-      //   bool flag = false;
-      //   FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      //     if (user != null) {
-      //       flag = true;
-      //     } else {
-      //       flag = false;
-      //     }
-      //   });
-      //   if (flag) {
-      //     return HomeScreen.routeName;
-      //   } else {
-      //     return LoginPage.routeName;
-      //   }
-      // },
     ),
     GoRoute(
       path: OTPVerificationScreen.routeName,
@@ -57,7 +42,9 @@ final router = GoRouter(
     ),
     GoRoute(
       path: LotteryScreen.routeName,
-      builder: (context, state) => LotteryScreen(),
+      builder: (context, state){
+        return LotteryScreen(typeObject: state.extra! as Map<String,dynamic>);
+      },
     ),
     GoRoute(
       path: ResultScreen.routeName,

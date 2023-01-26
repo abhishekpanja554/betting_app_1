@@ -91,7 +91,7 @@ class _VerticalTabViewState extends State<VerticalTabView>
     }
 
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       pageController.jumpToPage(widget.initialIndex);
       setState(() {});
     });

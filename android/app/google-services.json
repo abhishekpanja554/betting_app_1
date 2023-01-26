@@ -37,6 +37,13 @@
             {
               "client_id": "210363865612-ogrr4m9i0l99d3u4kba1fkdeu5l1fsvm.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "210363865612-1iigslufssd467bc441p0d9tsgnjhr0b.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.bettingApp1"
+              }
             }
           ]
         }

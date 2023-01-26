@@ -3,30 +3,49 @@
 import 'package:betting_app_1/constants/colors.dart';
 import 'package:betting_app_1/widgets/header.dart';
 import 'package:betting_app_1/widgets/vertical_tabs.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:tab_container/tab_container.dart';
 
 class LotteryScreen extends StatefulWidget {
   static String routeName = '/lottery_page';
-  const LotteryScreen({super.key});
+  final Map<String, dynamic> typeObject;
+  const LotteryScreen({required this.typeObject, super.key});
 
   @override
   State<LotteryScreen> createState() => _LotteryScreenState();
 }
 
 class _LotteryScreenState extends State<LotteryScreen> {
-  int selectedTicket = 0;
+  Map<String, dynamic> selectedTickets = {};
+  late Stream<QuerySnapshot<Map<String, dynamic>>> _ticketsStream;
 
-  Widget myChoiceChip(int index) {
-    var f = NumberFormat("00000", "en_US");
-    var formattedNumber = f.format(index);
+  Map<int, String> tabs = {};
+
+  @override
+  void initState() {
+    var now = DateTime.now();
+    var formatterDate = DateFormat('yyyy-MM-dd');
+    String formattedDate = formatterDate.format(now);
+    _ticketsStream = FirebaseFirestore.instance
+        .collection('tickets')
+        // .doc("2023-01-25")
+        .doc(formattedDate)
+        .collection("type_ids")
+        .doc(widget.typeObject["type_id"])
+        .collection("each_ticket_set")
+        .snapshots();
+    super.initState();
+  }
+
+  Widget myChoiceChip(
+      QueryDocumentSnapshot<Map<String, dynamic>> querySnapshot) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
       child: ChoiceChip(
-        label: Text("50 A $formattedNumber"),
+        label: Text("${querySnapshot["data"]["ticket_number"] ?? "-"}"),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
           side: BorderSide(
@@ -35,10 +54,12 @@ class _LotteryScreenState extends State<LotteryScreen> {
         ),
         elevation: 5,
         pressElevation: 2,
-        selected: index == selectedTicket,
+        selected: selectedTickets.containsKey(querySnapshot["ticket_id"]),
         selectedColor: buttonPrimary,
         labelStyle: TextStyle(
-          color: index == selectedTicket ? Colors.white : buttonPrimary,
+          color: selectedTickets.containsKey(querySnapshot["ticket_id"])
+              ? Colors.white
+              : buttonPrimary,
           fontSize: 13,
           fontWeight: FontWeight.w600,
         ),
@@ -46,27 +67,34 @@ class _LotteryScreenState extends State<LotteryScreen> {
         labelPadding: EdgeInsets.all(0),
         backgroundColor: Colors.white,
         onSelected: (bool value) {
-          if (value) {
-            setState(() {
-              selectedTicket = index;
-            });
-          }
+          setState(() {
+            if (value) {
+              selectedTickets[querySnapshot["ticket_id"]] = querySnapshot;
+            } else {
+              selectedTickets.remove(querySnapshot["ticket_id"]);
+            }
+          });
         },
       ),
     );
   }
 
-  List<Widget> generateTickets() {
+  List<Widget> generateTickets(
+      List<QueryDocumentSnapshot<Map<String, dynamic>>> snapshot,
+      String ticketType) {
     List<Widget> widgets = [];
-    for (var i = 0; i < 20; i++) {
-      widgets.add(myChoiceChip(i));
+    for (var i = 0; i < snapshot.length; i++) {
+      if (snapshot[i].data()["data"]["batch"] == ticketType) {
+        widgets.add(myChoiceChip(snapshot[i]));
+      }
     }
     return widgets;
   }
 
-  List<Widget> generateTabs() {
+  List<Widget> generateTabViews(
+      List<QueryDocumentSnapshot<Map<String, dynamic>>> snapshot) {
     List<Widget> widgets = [];
-    for (var i = 0; i < getTabs().length; i++) {
+    for (var i = 0; i < tabs.length; i++) {
       widgets.add(
         Container(
           child: Column(
@@ -85,7 +113,7 @@ class _LotteryScreenState extends State<LotteryScreen> {
               Expanded(
                 child: SingleChildScrollView(
                   child: Wrap(
-                    children: generateTickets(),
+                    children: generateTickets(snapshot, tabs[i]!),
                   ),
                 ),
               ),
@@ -101,7 +129,9 @@ class _LotteryScreenState extends State<LotteryScreen> {
     List<Tab> tabList = [];
     int c = "A".codeUnitAt(0);
     int end = "Z".codeUnitAt(0);
+    int i = 0;
     while (c <= end) {
+      tabs[i] = String.fromCharCode(c);
       tabList.add(
         Tab(
           child: Text(
@@ -115,6 +145,7 @@ class _LotteryScreenState extends State<LotteryScreen> {
         ),
       );
       c++;
+      i++;
     }
     return tabList;
   }
@@ -122,6 +153,22 @@ class _LotteryScreenState extends State<LotteryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: selectedTickets.isEmpty
+          ? null
+          : FloatingActionButton(
+              backgroundColor: buttonPrimary,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              onPressed: () async {
+              },
+              child: Text(
+                "Buy",
+                style: GoogleFonts.montserrat(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                ),
+              ),
+            ),
       body: SafeArea(
         child: Container(
           height: MediaQuery.of(context).size.height,
@@ -143,14 +190,35 @@ class _LotteryScreenState extends State<LotteryScreen> {
                 backButtonAction: () => context.pop(),
               ),
               Expanded(
-                child: VerticalTabView(
-                  tabsWidth: 90,
-                  backgroundColor: Colors.transparent,
-                  indicatorColor: Colors.white,
-                  selectedTabBackgroundColor: buttonPrimary,
-                  tabBackgroundColor: deepPurple,
-                  tabs: getTabs(),
-                  contents: generateTabs(),
+                child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                  stream: _ticketsStream,
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
+                          snapshot) {
+                    if (snapshot.connectionState != ConnectionState.active) {
+                      return Center(
+                        child: CircularProgressIndicator(
+                          color: deepPurple,
+                        ),
+                      );
+                    } else {
+                      return Column(
+                        children: [
+                          Expanded(
+                            child: VerticalTabView(
+                              tabsWidth: 90,
+                              backgroundColor: Colors.transparent,
+                              indicatorColor: Colors.white,
+                              selectedTabBackgroundColor: buttonPrimary,
+                              tabBackgroundColor: deepPurple,
+                              tabs: getTabs(),
+                              contents: generateTabViews(snapshot.data!.docs),
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+                  },
                 ),
               ),
             ],
