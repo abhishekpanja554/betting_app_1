@@ -3,15 +3,15 @@ import 'package:betting_app_1/widgets/header.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class MyKYCPage extends StatefulWidget {
+class CartPage extends StatefulWidget {
   static String routeName = '/cart_page';
-  const MyKYCPage({super.key});
+  const CartPage({super.key});
 
   @override
-  State<MyKYCPage> createState() => _MyKYCPageState();
+  State<CartPage> createState() => _CartPageState();
 }
 
-class _MyKYCPageState extends State<MyKYCPage> {
+class _CartPageState extends State<CartPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

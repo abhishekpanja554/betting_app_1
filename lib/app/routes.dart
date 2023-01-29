@@ -3,6 +3,7 @@
 import 'package:betting_app_1/screens/auth/login.dart';
 import 'package:betting_app_1/screens/auth/otp_verification.dart';
 import 'package:betting_app_1/screens/auth/registration.dart';
+import 'package:betting_app_1/screens/cart/screen.dart';
 import 'package:betting_app_1/screens/home/screen.dart';
 import 'package:betting_app_1/screens/lottery/lottery_screen.dart';
 import 'package:betting_app_1/screens/results/results_screen.dart';
@@ -49,6 +50,10 @@ final router = GoRouter(
     GoRoute(
       path: ResultScreen.routeName,
       builder: (context, state) => ResultScreen(),
+    ),
+    GoRoute(
+      path: CartPage.routeName,
+      builder: (context, state) => CartPage(),
     ),
   ],
 );

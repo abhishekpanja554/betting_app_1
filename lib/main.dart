@@ -24,7 +24,7 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp.router(
         routerConfig: router,
         debugShowCheckedModeBanner: false,
-        title: 'Betting App',
+        title: 'MM Lottery',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),

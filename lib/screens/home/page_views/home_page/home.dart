@@ -1,7 +1,5 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-import 'dart:io';
-
 import 'package:betting_app_1/app/app_data.dart';
 import 'package:betting_app_1/constants/colors.dart';
 import 'package:betting_app_1/screens/lottery/lottery_screen.dart';
@@ -105,6 +103,10 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  getColor(){
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -138,17 +140,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: ticketTypesDocs.map((e){
                         return lotteryBox(typeObj: e.data());
                       }).toList(),
-                      // [
-                      //   lotteryBox(title: "Morning Lottery"),
-                      //   lotteryBox(
-                      //       title: "Evening Lottery", backgroundColor: orange1),
-                      //   lotteryBox(
-                      //       title: "Night Lottery",
-                      //       backgroundColor: deepPurple),
-                      //   lotteryBox(title: "Weekly Lottery"),
-                      //   lotteryBox(
-                      //       title: "Monthly Lottery", backgroundColor: orange1),
-                      // ],
                     );
                   } else {
                     return Center(
